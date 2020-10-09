@@ -100,9 +100,9 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
     chartGroup.append('text')
         .attr('transform', 'rotate(-90)')
         .attr('y', 0 - (margin.left / 2) - 25)
-        .attr('x', 0 - (chartHeight / 2))
+        .attr('x', 0 - (chartHeight / 2) - 30)
         .attr('dy', '1em')
         .attr('class', 'axisText')
-        .text('Lacks Healtcare(%)');
+        .text('Lacks Healtcare (%)');
 
 });
