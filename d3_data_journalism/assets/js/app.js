@@ -35,56 +35,48 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
     // Cast each hours value in tvData as a number using the unary + operator
     newsData.forEach(function(data) {
       data.poverty = +data.poverty;
-      data.healtcare = +data.healtcare;
+      data.healtcare = +data.healthcare;
       data.obese = +data.obese;
       data.smokes = +data.smokes;
       data.age = +data.ageMoe;
       data.income = +data.incomeMoe;
       console.log("Poverty:", data.poverty);
       console.log("healthCare:", data.healthcare);
-    })
+    });
 
-    var xLinearScale = d3.scaleLinear()
+    // Configure a linear scale with a range between 0 and width
+    // Set the domain for the xLinearScale function
+    var xScale = d3.scaleLinear()
     .range([0, chartWidth])
-    .domain(0, d3.extent(newsData, data => data.poverty));
+    .domain(d3.extent(newsData, d => d.poverty));
 
     // Configure a linear scale with a range between the chartHeight and 0
-    // Set the domain for the xLinearScale function
-    var yLinearScale = d3.scaleLinear()
+    // Set the domain for the yLinearScale function
+    var yScale = d3.scaleLinear()
     .range([chartHeight, 0])
-    .domain([0, d3.max(newsData, data => data.healthcare)]);
+    .domain([0, d3.max(newsData, d => d.healthcare)]);
 
-    // Create two new functions passing the scales in as arguments
-    // These will be used to create the chart's axes
-    var bottomAxis = d3.axisBottom(xLinearScale);
-    var leftAxis = d3.axisLeft(yLinearScale);
+    // Creating new axes
+    var bottomAxis = d3.axisBottom(xScale);
+    var leftAxis = d3.axisLeft(yScale);
 
-    var yAxis = chartGroup.append("g")
-        .classed('y-axis', true)
-        .call(leftAxis);
-
-    var xAxis = chartGroup.append("g")
-        .classed('x-axis', true)
+    chartGroup.append("g")
         .attr("transform", `translate(0, ${chartHeight})`)
         .call(bottomAxis);
 
-    var circles = chartGroup.selectAll('.stateCircle')
+    chartGroup.append("g")
+        .call(leftAxis);
+
+    // Creating circle ids
+    var circles = chartGroup.selectAll('circle')
         .data(newsData)
         .enter()
         .append('circle')
-        .attr('cx', d => xLinearScale(d[xAxis]))
-        .attr('cy', d => yLinearScale(d[yAxis]))
-        .attr('class', 'stateCircle')
+        .attr('cx', d => xScale(d.poverty))
+        .attr('cy', d => yScale(d.healtcare))
         .attr('r', 15)
+        .attr("stroke-width", "1")
+        .classed('stateCircle', true)
         .attr('opacity', '0.75');
-
-    // Use the linear and band scales to position each rectangle within the chart
-    chartGroup.selectAll(".dot")
-        .data(newsData)
-        .enter()
-        .append("circle")
-        .attr("x", d => xLinearScale(d.poverty))
-        .attr("y", d => yLinearScale(d.healthcare))
-
 
 });
