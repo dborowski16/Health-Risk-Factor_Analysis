@@ -14,11 +14,11 @@ function makeResponsive() {
 
     // Define the chart's margins as an object
     var margin = {
-    top: 10,
-    right: 40,
-    bottom: 90,
-    left: 100
-    };
+        top: 10,
+        right: 40,
+        bottom: 90,
+        left: 100
+        };
 
     // Define dimensions of the chart area
     var chartWidth = svgWidth - margin.left - margin.right;
@@ -26,13 +26,13 @@ function makeResponsive() {
 
     // Select body, append SVG area to it, and set the dimensions
     var svg = d3.select("#scatter")
-    .append("svg")
-    .attr("height", svgHeight)
-    .attr("width", svgWidth);
+        .append("svg")
+        .attr("height", svgHeight)
+        .attr("width", svgWidth);
 
     // Append a group to the SVG area and shift ('translate') it to the right and to the bottom
     var chartGroup = svg.append("g")
-    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     // Initial Axis Parameters
     var chosenXaxis = 'poverty';
@@ -105,28 +105,28 @@ function makeResponsive() {
         if (chosenYAxis === 'healthcare') {
             var ylabel = 'Lacks Healthcare (%): ';
             }
-        else if (chosenXAxis === 'obesity') {
-            var ylabel = 'Obese (%): ';
+        else if (chosenYAxis === 'smokes') {
+            var ylabel = 'Smokes (%): ';
             }
         else {
-            var ylabel = 'Smokes (%): ';
+            var ylabel = 'Obesity (%): ';
             }
             
         // Initialize tool tip
         var toolTip = d3.tip()
-            .attr("class", "tooltip d3-tip")
+            .attr('class', 'd3-tip')
             .offset([80, -60])
             .html(d => {
                 return (`${d.state} (${d.abbr})<br>${ylabel}${d[chosenYAxis]}<br>${xlabel}${d[chosenXAxis]}`);
             });
     
-        // circlesGroup.call(toolTip);
+        circlesGroup.call(toolTip);
 
         circlesGroup.on('mouseover', (data) => {
-                toolTip.show(data, this);
+                toolTip.show(newsData, this);
             })
             .on('mouseout', function(data, index) {
-                toolTip.hide(data, this);
+                toolTip.hide(newsData, this);
             });
     
         return circlesGroup;
@@ -212,16 +212,14 @@ function makeResponsive() {
         xLabelsGroup.selectAll('text')
             .on('click', function() {
                 var value = d3.select(this).attr('value');
+
                 if (value != chosenXaxis) {
                     chosenXaxis = value;
-
-                    console.log(value);
-
                     xLinearScale = xScale(newsData, chosenXaxis);
                     xAxis = renderXAxes(xLinearScale, xAxis);
                     circlesGroup = makeCircles(circlesGroup, xLinearScale,  chosenXaxis, yLinearScale, chosenYaxis);
                     textGroup = newText(textGroup, xLinearScale, chosenXaxis, yLinearScale, chosenYaxis)
-                    circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup, textGroup);
+                    circlesGroup = updateToolTip(circlesGroup, textGroup, chosenXAxis, chosenYAxis);
 
                 if (chosenXAxis === "poverty") {
                     povertyLabel.classed("active", true).classed("inactive", false);
@@ -238,8 +236,6 @@ function makeResponsive() {
                 }
                 }
             })
-
-        // var circlesGroup = updateToolTip(chosenXaxis, chosenYaxis, circlesGroup, textGroup)
         
         var yLabelsGroup = chartGroup.append('g')
         .attr('transform', 'rotate(-90)')
@@ -283,7 +279,7 @@ function makeResponsive() {
                     healthLabel.classed("active", true).classed("inactive", false);
                     smokesLabel.classed("active", false).classed("inactive", true);
                     obeseLabel.classed("active", false).classed("inactive", true);
-                } else if (chosenXAxis === "smokes") {
+                } else if (chosenYAxis === "smokes") {
                     healthLabel.classed("active", false).classed("inactive", true);
                     smokesLabel.classed("active", true).classed("inactive", false);
                     obeseLabel.classed("active", false).classed("inactive", true);
