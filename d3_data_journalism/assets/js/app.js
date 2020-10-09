@@ -15,7 +15,7 @@ var chartWidth = svgWidth - margin.left - margin.right;
 var chartHeight = svgHeight - margin.top - margin.bottom;
 
 // Select body, append SVG area to it, and set the dimensions
-var svg = d3.select("body")
+var svg = d3.select("#scatter")
   .append("svg")
   .attr("height", svgHeight)
   .attr("width", svgWidth);
@@ -35,11 +35,14 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
     // Cast each hours value in tvData as a number using the unary + operator
     newsData.forEach(function(data) {
       data.poverty = +data.poverty;
-      data.healtcare = +data.healtcare
+      data.healtcare = +data.healtcare;
+      data.obese = +data.obese;
+      data.smokes = +data.smokes;
+      data.age = +data.ageMoe;
+      data.income = +data.incomeMoe;
       console.log("Poverty:", data.poverty);
       console.log("healthCare:", data.healthcare);
     })
-
 
     var xLinearScale = d3.scaleLinear()
     .range([0, chartWidth])
@@ -56,12 +59,24 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
 
-    chartGroup.append("g")
-    .call(leftAxis);
+    var yAxis = chartGroup.append("g")
+        .classed('y-axis', true)
+        .call(leftAxis);
 
-    chartGroup.append("g")
+    var xAxis = chartGroup.append("g")
+        .classed('x-axis', true)
         .attr("transform", `translate(0, ${chartHeight})`)
         .call(bottomAxis);
+
+    var circles = chartGroup.selectAll('.stateCircle')
+        .data(newsData)
+        .enter()
+        .append('circle')
+        .attr('cx', d => xLinearScale(d[xAxis]))
+        .attr('cy', d => yLinearScale(d[yAxis]))
+        .attr('class', 'stateCircle')
+        .attr('r', 15)
+        .attr('opacity', '0.75');
 
     // Use the linear and band scales to position each rectangle within the chart
     chartGroup.selectAll(".dot")
