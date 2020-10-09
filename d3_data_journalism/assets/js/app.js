@@ -36,6 +36,15 @@ function xScale(newsData, chosenXaxis, chartWidth) {
     return xLinearScale;
 }
 
+// Function used for updating xAxis var upon click on axis label.
+function renderXAxes(newXScale, xAxis) {
+    var bottomAxis = d3.axisBottom(newXScale);
+    xAxis.transition()
+        .duration(1000)
+        .call(bottomAxis);
+    return xAxis;
+}
+
 // Updating Y-axis upon click from axis label
 function yScale(newsData, chosenYaxis, chartHeight) {
     var yLinearScale = d3.scaleLinear()
@@ -44,9 +53,31 @@ function yScale(newsData, chosenYaxis, chartHeight) {
     return yLinearScale;
 }
 
+// Function used for updating yAxis var upon click on axis label.
+function renderYAxes(newYScale, yAxis) {
+    var leftAxis = d3.axisLeft(newYScale);
+    yAxis.transition()
+        .duration(1000)
+        .call(leftAxis);
+    return yAxis;
+}
+
+// Making circle markers
+function makeCircles(circlesGroup, newXScale, newYScale, chosenXaxis, chosenYaxis) {
+    circlesGroup.transition()
+        duration(1000)
+        .attr('cx', d => newXScale(d[chosenXaxis]))
+        .attr('cy', d => newYScale(d[chosenYaxis]))
+        // .attr('r', 15)
+        // .attr("stroke-width", "1")
+        // .classed('stateCircle', true)
+        // .attr('opacity', '0.75');
+    return circlesGroup;
+}
+
 d3.csv("assets/data/data.csv").then(function(newsData) {
 
-    console.log(newsData);
+    // console.log(newsData);
 
     // Cast each hours value in tvData as a number using the unary + operator
     newsData.forEach(function(data) {
@@ -56,21 +87,7 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
       data.smokes = +data.smokes;
       data.age = +data.ageMoe;
       data.income = +data.incomeMoe;
-      console.log("Poverty:", data.poverty);
-      console.log("healthCare:", data.healthcare);
     });
-
-    // Configure a linear scale with a range between 0 and width
-    // Set the domain for the xLinearScale function
-    // var xScale = d3.scaleLinear()
-    // .range([0, chartWidth])
-    // .domain(d3.extent(newsData, d => d.poverty));
-
-    // Configure a linear scale with a range between the chartHeight and 0
-    // Set the domain for the yLinearScale function
-    // var yScale = d3.scaleLinear()
-    // .range([chartHeight, 0])
-    // .domain([0, d3.max(newsData, d => d.healthcare)]);
 
     var xLinearScale = xScale(newsData, chosenXaxis, chartWidth);
     var yLinearScale = yScale(newsData, chosenYaxis, chartHeight);
@@ -79,20 +96,19 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
 
-    chartGroup.append('g')
+    var xAxis = chartGroup.append('g')
         .attr('transform', `translate(0, ${chartHeight})`)
         .call(bottomAxis);
 
-    chartGroup.append('g')
+    var yAxis = chartGroup.append('g')
         .call(leftAxis);
 
-    // Creating circle ids
-    var circles = chartGroup.selectAll('circle')
+    var circlesGroup = chartGroup.selectAll('circle')
         .data(newsData)
         .enter()
         .append('circle')
-        .attr('cx', d => xLinearScale(d.poverty))
-        .attr('cy', d => yLinearScale(d.healthcare))
+        .attr('cx', d => xLinearScale(d[chosenXaxis]))
+        .attr('cy', d => yLinearScale(d[chosenYaxis]))
         .attr('r', 15)
         .attr("stroke-width", "1")
         .classed('stateCircle', true)
