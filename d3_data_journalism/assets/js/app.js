@@ -24,6 +24,26 @@ var svg = d3.select("#scatter")
 var chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+// Initial Axis Parameters
+chosenXaxis = 'poverty';
+chosenYaxis = 'healthcare';
+
+// Updating X-axis upon click on axis label
+function xScale(newsData, chosenXaxis, chartWidth) {
+    var xLinearScale = d3.scaleLinear()
+    .domain(d3.extent(newsData, d => d[chosenXaxis]))
+    .range([0,chartWidth]);
+    return xLinearScale;
+}
+
+// Updating Y-axis upon click from axis label
+function yScale(newsData, chosenYaxis, chartHeight) {
+    var yLinearScale = d3.scaleLinear()
+    .domain(d3.extent(newsData, d => d[chosenYaxis]))
+    .range([chartHeight, 0]);
+    return yLinearScale;
+}
+
 d3.csv("assets/data/data.csv").then(function(newsData) {
 
     console.log(newsData);
@@ -42,19 +62,22 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
 
     // Configure a linear scale with a range between 0 and width
     // Set the domain for the xLinearScale function
-    var xScale = d3.scaleLinear()
-    .range([0, chartWidth])
-    .domain(d3.extent(newsData, d => d.poverty));
+    // var xScale = d3.scaleLinear()
+    // .range([0, chartWidth])
+    // .domain(d3.extent(newsData, d => d.poverty));
 
     // Configure a linear scale with a range between the chartHeight and 0
     // Set the domain for the yLinearScale function
-    var yScale = d3.scaleLinear()
-    .range([chartHeight, 0])
-    .domain([0, d3.max(newsData, d => d.healthcare)]);
+    // var yScale = d3.scaleLinear()
+    // .range([chartHeight, 0])
+    // .domain([0, d3.max(newsData, d => d.healthcare)]);
+
+    var xLinearScale = xScale(newsData, chosenXaxis, chartWidth);
+    var yLinearScale = yScale(newsData, chosenYaxis, chartHeight);
 
     // Creating new axes
-    var bottomAxis = d3.axisBottom(xScale);
-    var leftAxis = d3.axisLeft(yScale);
+    var bottomAxis = d3.axisBottom(xLinearScale);
+    var leftAxis = d3.axisLeft(yLinearScale);
 
     chartGroup.append('g')
         .attr('transform', `translate(0, ${chartHeight})`)
@@ -68,8 +91,8 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
         .data(newsData)
         .enter()
         .append('circle')
-        .attr('cx', d => xScale(d.poverty))
-        .attr('cy', d => yScale(d.healthcare))
+        .attr('cx', d => xLinearScale(d.poverty))
+        .attr('cy', d => yLinearScale(d.healthcare))
         .attr('r', 15)
         .attr("stroke-width", "1")
         .classed('stateCircle', true)
@@ -82,8 +105,8 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
         .enter()
         .append('text')
         .text(d => d.abbr)
-        .attr('x', d => xScale(d.poverty))
-        .attr('y', d => yScale(d.healthcare))
+        .attr('x', d => xLinearScale(d.poverty))
+        .attr('y', d => yLinearScale(d.healthcare))
         .classed('.stateText', true)
         .attr('font-family', 'sans-serif')
         .attr('text-anchor', 'middle')
