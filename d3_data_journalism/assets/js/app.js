@@ -75,6 +75,14 @@ function makeCircles(circlesGroup, newXScale, newYScale, chosenXaxis, chosenYaxi
     return circlesGroup;
 }
 
+function newText(textGroup, newXScale, newYScale, chosenXaxis, chosenYaxis) {
+    textGroup.transition()
+        .duration(1000)
+        .attr('cx', d => newXScale(d[chosenXaxis]))
+        .attr('cy', d => newYScale(d[chosenYaxis]))
+    return textGroup;
+}
+
 d3.csv("assets/data/data.csv").then(function(newsData) {
 
     // console.log(newsData);
@@ -115,33 +123,88 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
         .attr('opacity', '0.75');
 
     // Creating text for each data point
-    chartGroup.append('g')
-        .selectAll('text')
+    var textGroup = chartGroup.selectAll('.stateText')
         .data(newsData)
         .enter()
         .append('text')
         .text(d => d.abbr)
-        .attr('x', d => xLinearScale(d.poverty))
-        .attr('y', d => yLinearScale(d.healthcare))
-        .classed('.stateText', true)
-        .attr('font-family', 'sans-serif')
-        .attr('text-anchor', 'middle')
-        .attr('fill', 'white')
+        .attr('x', d => xLinearScale(d[chosenXaxis]))
+        .attr('y', d => yLinearScale(d[chosenYaxis]))
+        .classed('stateText', true)
         .attr('font-size', '10px')
-        .style('font-weight', 'bold')
         .attr('alignment-baseline', 'central');
 
-    chartGroup.append('text')
+    // Creating a new group for 3 x-axis
+    var xLabelsGroup = chartGroup.append('g')
         .attr('transform', `translate(${chartWidth / 2}, 470)`)
+
+    var povertyLabel = xLabelsGroup.append('text')
         .attr('class', 'axisText')
+        .attr('value', 'poverty')
         .text('In Poverty (%)');
 
-    chartGroup.append('text')
+    var ageLabel = xLabelsGroup.append('text')
+        .attr('class', 'axisText')
+        .attr('value', 'poverty')
+        .text('Age (Median)');
+
+    var houseLabel = xLabelsGroup.append('text')
+        .attr('class', 'axisText')
+        .attr('value', 'poverty')
+        .text('Household Income (Median');
+
+    xLabelsGroup.selectAll('text')
+        .on('click', function() {
+            var value = d3.select(this).attr('value');
+            if (value != chosenXaxis) {
+                chosenXaxis = value;
+                xLinearScale = xScale(newsData, chosenXaxis);
+                xAxis = renderXAxes(xLinearScale, xAxis);
+                circlesGroup = makeCircles(circlesGroup, xLinearScale, yLinearScale, chosenXaxis, chosenYaxis);
+                textGroup = newText(textGroup, xLinearScale, yLinearScale, chosenXaxis, chosenYaxis)
+
+                if (chosenXAxis === "poverty") {
+                    povertyLabel.classed("active", true).classed("inactive", false);
+                    ageLabel.classed("active", false).classed("inactive", true);
+                    houseLabel.classed("active", false).classed("inactive", true);
+                } else if (chosenXAxis === "age") {
+                    povertyLabel.classed("active", false).classed("inactive", true);
+                    ageLabel.classed("active", true).classed("inactive", false);
+                    houseLabel.classed("active", false).classed("inactive", true);
+                } else {
+                    povertyLabel.classed("active", false).classed("inactive", true);
+                    ageLabel.classed("active", false).classed("inactive", true);
+                    houseLabel.classed("active", true).classed("inactive", false);
+                }
+            }
+        })
+    
+    var yLabelsGroup = chartGroup.append('g')
+    .attr('transform', `translate(${0 - margin.left/4}, ${chartHeight/2})`)
+
+    var healthLabel = xLabelsGroup.append('text')
         .attr('transform', 'rotate(-90)')
         .attr('y', 0 - (margin.left / 2) - 25)
         .attr('x', 0 - (chartHeight / 2) - 30)
         .attr('dy', '1em')
         .attr('class', 'axisText')
         .text('Lacks Healtcare (%)');
+
+    var smokesLabel = xLabelsGroup.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 0 - (margin.left / 2) - 25)
+        .attr('x', 0 - (chartHeight / 2) - 30)
+        .attr('dy', '1em')
+        .attr('class', 'axisText')
+        .text('Smokes (%)');
+
+    var obeseLabel = xLabelsGroup.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 0 - (margin.left / 2) - 25)
+        .attr('x', 0 - (chartHeight / 2) - 30)
+        .attr('dy', '1em')
+        .attr('class', 'axisText')
+        .text('Obese (%)');
+
 
 });
