@@ -27,11 +27,7 @@ var chartGroup = svg.append("g")
 d3.csv("assets/data/data.csv").then(function(newsData) {
 
     console.log(newsData);
-  
-    // log a list of states
-    var state = newsData.map(data => data.abbr);
-    console.log(state);
-  
+
     // Cast each hours value in tvData as a number using the unary + operator
     newsData.forEach(function(data) {
       data.poverty = +data.poverty;
@@ -73,10 +69,45 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
         .enter()
         .append('circle')
         .attr('cx', d => xScale(d.poverty))
-        .attr('cy', d => yScale(d.healtcare))
+        .attr('cy', d => yScale(d.healthcare))
         .attr('r', 15)
         .attr("stroke-width", "1")
         .classed('stateCircle', true)
         .attr('opacity', '0.75');
+
+    // Creating text for each data point
+    chartGroup.append('g')
+        .selectAll('text')
+        .data(newsData)
+        .enter()
+        .append('text')
+        .text(d => d.abbr)
+        .attr('cx', d => xScale(d.poverty))
+        .attr('cy', d => yScale(d.healthcare))
+        .classed('.stateText', true)
+        .attr('font-family', 'sans-serif')
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'white')
+        .attr('font-size', '10px')
+        .style('font-weight', 'bold')
+        .attr('alignment-baseline', 'central');
+
+    chartGroup.append("text")
+        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 13})`)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("fill", "black")
+        .style("font-weight", "bold")
+        .text("In Poverty (%)");
+
+    chartGroup.append("text")
+        .attr("cy", 0 - ((margin.left / 2) + 2))
+        .attr("cx", 0 - (chartHeight / 2))
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("fill", "black")
+        .style("font-weight", "bold")
+        .attr("transform", "rotate(-90)")
+        .text("Lacks Healthcare (%)");
 
 });
