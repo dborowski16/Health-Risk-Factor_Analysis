@@ -31,7 +31,7 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
     // Cast each hours value in tvData as a number using the unary + operator
     newsData.forEach(function(data) {
       data.poverty = +data.poverty;
-      data.healtcare = +data.healthcare;
+      data.healthcare = +data.healthcare;
       data.obese = +data.obese;
       data.smokes = +data.smokes;
       data.age = +data.ageMoe;
@@ -56,11 +56,11 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
     var bottomAxis = d3.axisBottom(xScale);
     var leftAxis = d3.axisLeft(yScale);
 
-    chartGroup.append("g")
-        .attr("transform", `translate(0, ${chartHeight})`)
+    chartGroup.append('g')
+        .attr('transform', `translate(0, ${chartHeight})`)
         .call(bottomAxis);
 
-    chartGroup.append("g")
+    chartGroup.append('g')
         .call(leftAxis);
 
     // Creating circle ids
@@ -82,8 +82,8 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
         .enter()
         .append('text')
         .text(d => d.abbr)
-        .attr('cx', d => xScale(d.poverty))
-        .attr('cy', d => yScale(d.healthcare))
+        .attr('x', d => xScale(d.poverty))
+        .attr('y', d => yScale(d.healthcare))
         .classed('.stateText', true)
         .attr('font-family', 'sans-serif')
         .attr('text-anchor', 'middle')
@@ -92,22 +92,17 @@ d3.csv("assets/data/data.csv").then(function(newsData) {
         .style('font-weight', 'bold')
         .attr('alignment-baseline', 'central');
 
-    chartGroup.append("text")
-        .attr("transform", `translate(${chartWidth / 2}, ${chartHeight + margin.top + 13})`)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "16px")
-        .attr("fill", "black")
-        .style("font-weight", "bold")
-        .text("In Poverty (%)");
+    chartGroup.append('text')
+        .attr('transform', `translate(${chartWidth / 2}, 470)`)
+        .attr('class', 'axisText')
+        .text('In Poverty (%)');
 
-    chartGroup.append("text")
-        .attr("cy", 0 - ((margin.left / 2) + 2))
-        .attr("cx", 0 - (chartHeight / 2))
-        .attr("text-anchor", "middle")
-        .attr("font-size", "16px")
-        .attr("fill", "black")
-        .style("font-weight", "bold")
-        .attr("transform", "rotate(-90)")
-        .text("Lacks Healthcare (%)");
+    chartGroup.append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 0 - (margin.left / 2) - 25)
+        .attr('x', 0 - (chartHeight / 2))
+        .attr('dy', '1em')
+        .attr('class', 'axisText')
+        .text('Lacks Healtcare(%)');
 
 });
