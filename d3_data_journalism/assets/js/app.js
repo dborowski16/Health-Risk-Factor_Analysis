@@ -41,7 +41,7 @@ function makeResponsive() {
     // Updating X-axis upon click on axis label
     function xScale(newsData, chosenXaxis) {
         var xLinearScale = d3.scaleLinear()
-        .domain(d3.extent(newsData, d => d[chosenXaxis]))
+        .domain([d3.min(newsData, d => d[chosenXaxis]), d3.max(newsData, d => d[chosenXaxis])])
         .range([0,chartWidth]);
         return xLinearScale;
     }
@@ -90,22 +90,22 @@ function makeResponsive() {
     }
 
     // update circles group with new tooltip
-    function updateToolTip(circlesGroup, textGroup, chosenXAxis, chosenYAxis) {
+    function updateToolTip(circlesGroup, chosenXaxis, chosenYaxis) {
     
-        if (chosenXAxis === 'poverty') {
+        if (chosenXaxis === 'poverty') {
             var xlabel = 'In Poverty (%): ';
             }
-        else if (chosenXAxis === 'age') {
+        else if (chosenXaxis === 'age') {
             var xlabel = 'Age (Median): ';
             }
         else {
             var xlabel = 'Household Income (Median): $';
             };  
 
-        if (chosenYAxis === 'healthcare') {
+        if (chosenYaxis === 'healthcare') {
             var ylabel = 'Lacks Healthcare (%): ';
             }
-        else if (chosenYAxis === 'smokes') {
+        else if (chosenYaxis === 'smokes') {
             var ylabel = 'Smokes (%): ';
             }
         else {
@@ -117,16 +117,16 @@ function makeResponsive() {
             .attr('class', 'd3-tip')
             .offset([80, -60])
             .html(d => {
-                return (`${d.state} (${d.abbr})<br>${ylabel}${d[chosenYAxis]}<br>${xlabel}${d[chosenXAxis]}`);
+                return (`${d.state} (${d.abbr})<br>${ylabel}${d[chosenYaxis]}<br>${xlabel}${d[chosenXaxis]}`);
             });
     
         circlesGroup.call(toolTip);
 
         circlesGroup.on('mouseover', (data) => {
-                toolTip.show(newsData, this);
+                toolTip.show(data, this);
             })
-            .on('mouseout', function(data, index) {
-                toolTip.hide(newsData, this);
+            .on('mouseout', function(data) {
+                toolTip.hide(data, this);
             });
     
         return circlesGroup;
@@ -139,7 +139,7 @@ function makeResponsive() {
         newsData.forEach(function(data) {
             data.poverty = +data.poverty;
             data.healthcare = +data.healthcare;
-            data.obese = +data.obese;
+            data.obesity = data.obesity;
             data.smokes = +data.smokes;
             data.age = +data.age;
             data.income = +data.income;
@@ -219,13 +219,13 @@ function makeResponsive() {
                     xAxis = renderXAxes(xLinearScale, xAxis);
                     circlesGroup = makeCircles(circlesGroup, xLinearScale,  chosenXaxis, yLinearScale, chosenYaxis);
                     textGroup = newText(textGroup, xLinearScale, chosenXaxis, yLinearScale, chosenYaxis)
-                    circlesGroup = updateToolTip(circlesGroup, textGroup, chosenXAxis, chosenYAxis);
+                    circlesGroup = updateToolTip(circlesGroup, chosenXaxis, chosenYaxis);
 
-                if (chosenXAxis === "poverty") {
+                if (chosenXaxis === "poverty") {
                     povertyLabel.classed("active", true).classed("inactive", false);
                     ageLabel.classed("active", false).classed("inactive", true);
                     houseLabel.classed("active", false).classed("inactive", true);
-                } else if (chosenXAxis === "age") {
+                } else if (chosenXaxis === "age") {
                     povertyLabel.classed("active", false).classed("inactive", true);
                     ageLabel.classed("active", true).classed("inactive", false);
                     houseLabel.classed("active", false).classed("inactive", true);
@@ -273,13 +273,13 @@ function makeResponsive() {
                 yAxis = renderYAxes(yLinearScale, yAxis);
                 circlesGroup = makeCircles(circlesGroup, xLinearScale,  chosenXaxis, yLinearScale, chosenYaxis);
                 textGroup = newText(textGroup, xLinearScale, chosenXaxis, yLinearScale, chosenYaxis)
-                circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup, textGroup);
+                circlesGroup = updateToolTip(chosenXaxis, chosenYaxis, circlesGroup);
 
-                if (chosenYAxis === "healthcare") {
+                if (chosenYaxis === "healthcare") {
                     healthLabel.classed("active", true).classed("inactive", false);
                     smokesLabel.classed("active", false).classed("inactive", true);
                     obeseLabel.classed("active", false).classed("inactive", true);
-                } else if (chosenYAxis === "smokes") {
+                } else if (chosenYaxis === "smokes") {
                     healthLabel.classed("active", false).classed("inactive", true);
                     smokesLabel.classed("active", true).classed("inactive", false);
                     obeseLabel.classed("active", false).classed("inactive", true);
