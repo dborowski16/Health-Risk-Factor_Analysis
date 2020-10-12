@@ -1,5 +1,7 @@
 # d3-challenge
 
+![Demo](https://github.com/dborowski16/Belly-Button-Biodiversity/blob/master/static/Images/BBD%20demo.gif?raw=true)
+
 # Introduction:
 The goal of this particaular assignment as someone starting out working for a newspaper tasked with working on data visualization, was to take in health data along with some demographics to asses the risk factors to ones health.  The data set provided is census data from the following link.  https://factfinder.census.gov/faces/nav/jsf/pages/searchresults.xhtml
 The end product was to build a interactive chart that would allow the user to select multiple x and y axes to plot the metrics for analysis to asses which factor and groups of people would be more at risk when it comes to categories such as income, age, obesity, smoking, and lack of insurance.
