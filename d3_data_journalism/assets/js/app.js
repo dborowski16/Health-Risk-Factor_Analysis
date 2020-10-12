@@ -120,13 +120,13 @@ function makeResponsive() {
                 return (`${d.state} (${d.abbr})<br>${ylabel}${d[chosenYaxis]}<br>${xlabel}${d[chosenXaxis]}`);
             });
     
-        circlesGroup.call(toolTip);
+        chartGroup.call(toolTip);
 
         circlesGroup.on('mouseover', (data) => {
-                toolTip.show(data, this);
+                toolTip.show(data);
             })
-            .on('mouseout', function(data) {
-                toolTip.hide(data, this);
+            .on('mouseout', (data, index) => {
+                toolTip.hide(data);
             });
     
         return circlesGroup;
