@@ -1,6 +1,6 @@
 # d3-challenge
 
-![Demo](https://github.com/dborowski16/Belly-Button-Biodiversity/blob/master/static/Images/BBD%20demo.gif?raw=true)
+![Demo](https://github.com/dborowski16/d3-challenge/blob/main/d3_data_journalism/assets/demo.gif)
 
 # Introduction:
 The goal of this particaular assignment as someone starting out working for a newspaper tasked with working on data visualization, was to take in health data along with some demographics to asses the risk factors to ones health.  The data set provided is census data from the following link.  https://factfinder.census.gov/faces/nav/jsf/pages/searchresults.xhtml
