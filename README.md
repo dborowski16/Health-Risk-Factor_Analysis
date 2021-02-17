@@ -1,4 +1,4 @@
-# d3-challenge
+# Health Risk Factor Analysis
 
 ![Demo](https://github.com/dborowski16/d3-challenge/blob/main/d3_data_journalism/assets/demo.gif)
 
